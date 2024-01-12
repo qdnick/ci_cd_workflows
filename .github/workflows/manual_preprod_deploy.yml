@@ -77,7 +77,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          repository: BorovlevAS/ci_cd_workflows
+          repository: qdnick/ci_cd_workflows
           ref: 'main'
           path: ci_cd_tools
       - name: Install Python
