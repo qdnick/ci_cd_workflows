@@ -14,6 +14,11 @@ on:
       SERVER_USER:
         required: true
         type: string
+      #add port
+      #  SERVER_PORT:
+      #  required: true
+      #  type: string
+      #--
       MAIN_PATH:
         required: true
         type: string
@@ -90,7 +95,7 @@ jobs:
           install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{secrets.SSH_KEY}}" > ~/.ssh/id_rsa
           ssh-keyscan -H ${{inputs.SERVER_ADDR}} > ~/.ssh/known_hosts
-          ssh -T ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} > /dev/null
+          ssh -T -p 22 ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} > /dev/null
           echo "#!/bin/bash" > ~/update_script.sh
       - name: Update from SIMBIOZ repo - prepare
         if: ${{inputs.update_simbioz}}
@@ -141,7 +146,7 @@ jobs:
           echo "=== START PRINT SCRIPT ==="
           cat ~/update_script.sh
           echo "=== END PRINT SCRIPT ==="
-          ssh -o TCPKeepAlive=yes -o ServerAliveCountMax=30 -o ServerAliveInterval=60 ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} bash < ~/update_script.sh
+          ssh -o TCPKeepAlive=yes -o ServerAliveCountMax=30 -o ServerAliveInterval=60 -p 22 ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} bash < ~/update_script.sh
           python3 ci_cd_tools/scripts/odoo_update_addons.py "${{inputs.ODOO_USER}}" "${{secrets.ODOO_PASSWORD}}" "${{inputs.ODOO_URI}}" "${{inputs.ODOO_DB}}"
       - name: Hard update (base module)
         if: ${{inputs.base_update}}
@@ -155,4 +160,4 @@ jobs:
           sudo systemctl status ${{inputs.ODOO_SERVICE}}
           EOF
           cat ~/update_script.sh
-          ssh -o TCPKeepAlive=yes -o ServerAliveCountMax=100 -o ServerAliveInterval=60 ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} bash < ~/update_script.sh
+          ssh -o TCPKeepAlive=yes -o ServerAliveCountMax=100 -o ServerAliveInterval=60 -p 22 ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} bash < ~/update_script.sh
