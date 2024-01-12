@@ -15,7 +15,7 @@ on:
         required: true
         type: string
       SERVER_PORT:
-        required: true
+        required: false
         type: string
       MAIN_PATH:
         required: true
@@ -60,9 +60,8 @@ jobs:
             echo "SERVER_PORT is 22"
             echo "$SERVER_PORT is 22"
             echo "${SERVER_PORT} is 22"
-            echo "${{SERVER_PORT}} is 22"
           else
-            SERVER_PORT=${{inputs.SERVER_PORT}}  
+            SERVER_PORT=${{inputs.SERVER_PORT}}
           fi          
           if [[ -z "${{inputs.MAIN_PATH}}" ]]; then
             echo "MAIN_PATH is not set"
