@@ -59,7 +59,7 @@ jobs:
             SERVER_PORT=22
             echo "SERVER_PORT is 22"
           else
-          SERVER_PORT=${{inputs.SERVER_PORT}}  
+            SERVER_PORT=${{inputs.SERVER_PORT}}  
           fi          
           if [[ -z "${{inputs.MAIN_PATH}}" ]]; then
             echo "MAIN_PATH is not set"
