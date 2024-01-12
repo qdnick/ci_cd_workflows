@@ -58,7 +58,7 @@ jobs:
             exit 100
           fi
           if [[ -z "${{inputs.SERVER_PORT}}" ]]; then
-          ${{inputs.SERVER_PORT}} == 22
+          ${{inputs.SERVER_PORT}}=22
           echo "SERVER_PORT is 22"
           fi          
           if [[ -z "${{inputs.MAIN_PATH}}" ]]; then
