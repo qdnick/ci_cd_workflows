@@ -15,9 +15,9 @@ on:
         required: true
         type: string
       #add port
-      #  SERVER_PORT:
-      #  required: true
-      #  type: string
+        SERVER_PORT:
+        required: true
+        type: string
       #--
       MAIN_PATH:
         required: true
@@ -57,6 +57,10 @@ jobs:
             echo "SERVER_USER is not set"
             exit 100
           fi
+          if [[ -z "${{inputs.SERVER_PORT}}" ]]; then
+          ${{inputs.SERVER_PORT}} == 22
+          echo "SERVER_PORT is 22"
+          fi          
           if [[ -z "${{inputs.MAIN_PATH}}" ]]; then
             echo "MAIN_PATH is not set"
             exit 100
@@ -95,7 +99,7 @@ jobs:
           install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{secrets.SSH_KEY}}" > ~/.ssh/id_rsa
           ssh-keyscan -H ${{inputs.SERVER_ADDR}} > ~/.ssh/known_hosts
-          ssh -T -p 22 ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} > /dev/null
+          ssh -T -p ${{inputs.SERVER_PORT}} ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} > /dev/null
           echo "#!/bin/bash" > ~/update_script.sh
       - name: Update from SIMBIOZ repo - prepare
         if: ${{inputs.update_simbioz}}
@@ -146,7 +150,7 @@ jobs:
           echo "=== START PRINT SCRIPT ==="
           cat ~/update_script.sh
           echo "=== END PRINT SCRIPT ==="
-          ssh -o TCPKeepAlive=yes -o ServerAliveCountMax=30 -o ServerAliveInterval=60 -p 22 ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} bash < ~/update_script.sh
+          ssh -o TCPKeepAlive=yes -o ServerAliveCountMax=30 -o ServerAliveInterval=60 -p ${{inputs.SERVER_PORT}} ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} bash < ~/update_script.sh
           python3 ci_cd_tools/scripts/odoo_update_addons.py "${{inputs.ODOO_USER}}" "${{secrets.ODOO_PASSWORD}}" "${{inputs.ODOO_URI}}" "${{inputs.ODOO_DB}}"
       - name: Hard update (base module)
         if: ${{inputs.base_update}}
@@ -160,4 +164,4 @@ jobs:
           sudo systemctl status ${{inputs.ODOO_SERVICE}}
           EOF
           cat ~/update_script.sh
-          ssh -o TCPKeepAlive=yes -o ServerAliveCountMax=100 -o ServerAliveInterval=60 -p 22 ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} bash < ~/update_script.sh
+          ssh -o TCPKeepAlive=yes -o ServerAliveCountMax=100 -o ServerAliveInterval=60 -p ${{inputs.SERVER_PORT}} ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} bash < ~/update_script.sh
