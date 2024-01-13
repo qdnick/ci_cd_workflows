@@ -58,7 +58,7 @@ jobs:
             exit 100
           fi
           SERVER_PORTT="${{ inputs.SERVER_PORT }}"
-          [[ -z "${SERVER_PORTT}" ]] && SERVER_PORTT=22
+          [[ -z "$SERVER_PORTT" ]] && SERVER_PORTT=22
           echo "${{ env.SERVER_PORTT }} is env"
           echo "${{inputs.SERVER_PORT}} is input"
           echo "$SERVER_PORT is sp"    
