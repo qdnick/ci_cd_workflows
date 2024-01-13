@@ -44,9 +44,7 @@ jobs:
   deploy:
     runs-on: ubuntu-20.04
     env:
-      SERVER_PORTT:
-        required: false
-        type: string
+      SERVER_PORTT: 22
     steps:
       - name: Check variables
         run: |
@@ -59,9 +57,9 @@ jobs:
             echo "SERVER_USER is not set"
             exit 100
           fi
-          SERVER_PORTT 
-          if [[ -z "${{ inputs.SERVER_PORT }}" ]]; then
-            env.SERVER_PORTT=22
+          if [[ ! -z "${{ inputs.SERVER_PORT }}" ]]; then
+            SERVER_PORTT="${{ inputs.SERVER_PORT }}"
+            echo "SERVER_PORTT is $SERVER_PORT"
             echo "${{ env.SERVER_PORTT }} is env"
             echo "${{inputs.SERVER_PORT}} is input"
             echo "$SERVER_PORT is sp"    
