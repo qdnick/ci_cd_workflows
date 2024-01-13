@@ -44,7 +44,7 @@ jobs:
   deploy:
     runs-on: ubuntu-20.04
     env:
-      SERVER_PORT: 22
+      SERVER_PORTT:
     steps:
       - name: Check variables
         run: |
@@ -57,10 +57,11 @@ jobs:
             echo "SERVER_USER is not set"
             exit 100
           fi
-          SERVER_PORT="${{ inputs.SERVER_PORT }}"
-          [[ -z "${SERVER_PORT}" ]] && SERVER_PORT=22
-            echo "${{ env.SERVER_PORT }} is env"
-            echo "${{inputs.SERVER_PORT}} is input"    
+          SERVER_PORTT="${{ inputs.SERVER_PORT }}"
+          [[ -z "${SERVER_PORTT}" ]] && SERVER_PORTT=22
+          echo "${{ env.SERVER_PORTT }} is env"
+          echo "${{inputs.SERVER_PORT}} is input"
+          echo "$SERVER_PORT is sp"    
           if [[ -z "${{inputs.MAIN_PATH}}" ]]; then
             echo "MAIN_PATH is not set"
             exit 100
@@ -99,8 +100,8 @@ jobs:
           install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{secrets.SSH_KEY}}" > ~/.ssh/id_rsa
           ssh-keyscan -H ${{inputs.SERVER_ADDR}} > ~/.ssh/known_hosts
-          echo "is $SERVER_PORT and is ${SERVER_PORT} and ${{ env.SERVER_PORT }}"
-          ssh -T -p "${SERVER_PORT}" ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} > /dev/null
+          echo "is $SERVER_PORTT and is ${{SERVER_PORT}} and ${{ env.SERVER_PORTT }} inp ${{inputs.SERVER_PORT}} "
+          ssh -T -p $SERVER_PORTT ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} > /dev/null
           echo "#!/bin/bash" > ~/update_script.sh
       - name: Update from SIMBIOZ repo - prepare
         if: ${{inputs.update_simbioz}}
