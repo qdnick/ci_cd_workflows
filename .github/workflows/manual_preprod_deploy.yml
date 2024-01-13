@@ -57,12 +57,8 @@ jobs:
             echo "SERVER_USER is not set"
             exit 100
           fi
-          if [[ -z "${{inputs.SERVER_PORT}}" ]]; then
-            ${{ env.SERVER_PORT }}=22
-            echo "SERVER_PORT is 22"
-            echo "$SERVER_PORT is 22"
-          else
-            ${{ env.SERVER_PORT }}="${{inputs.SERVER_PORT}}"
+          SERVER_PORT="${{ inputs.SERVER_PORT }}"
+          [[ -z "${SERVER_PORT}" ]] && SERVER_PORT=22
             echo "${{ env.SERVER_PORT }} is env"
             echo "${{inputs.SERVER_PORT}} is input"  
           fi          
@@ -105,7 +101,7 @@ jobs:
           echo "${{secrets.SSH_KEY}}" > ~/.ssh/id_rsa
           ssh-keyscan -H ${{inputs.SERVER_ADDR}} > ~/.ssh/known_hosts
           echo "is $SERVER_PORT and is ${SERVER_PORT} and ${{ env.SERVER_PORT }}"
-          ssh -T -p ${{ env.SERVER_PORT }} ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} > /dev/null
+          ssh -T -p "${SERVER_PORT}" ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} > /dev/null
           echo "#!/bin/bash" > ~/update_script.sh
       - name: Update from SIMBIOZ repo - prepare
         if: ${{inputs.update_simbioz}}
