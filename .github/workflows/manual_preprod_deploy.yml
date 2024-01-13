@@ -40,11 +40,11 @@ on:
         required: true
       ODOO_PASSWORD:
         required: true
+env:
+  SERVER_PORTT: 22
 jobs:
   deploy:
     runs-on: ubuntu-20.04
-    env:
-      SERVER_PORTT: 22
     steps:
       - name: Check variables
         run: |
