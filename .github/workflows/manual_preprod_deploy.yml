@@ -15,7 +15,7 @@ on:
         required: true
         type: string
       SERVER_PORT:
-        required: false
+        required: true
         type: string
       MAIN_PATH:
         required: true
@@ -57,10 +57,10 @@ jobs:
             echo "SERVER_USER is not set"
             exit 100
           fi
-          if [[ ! -z "${{ inputs.SERVER_PORT }}" ]]; then
-            SERVER_PORTT="${{ inputs.SERVER_PORT }}"
+          if [[ ! -z "${{inputs.SERVER_PORT}}" ]]; then
+            SERVER_PORTT="${{inputs.SERVER_PORT}}"
             echo "SERVER_PORTT is $SERVER_PORT"
-            echo "${{ env.SERVER_PORTT }} is env"
+            echo "${{env.SERVER_PORTT}} is env"
             echo "${{inputs.SERVER_PORT}} is input"
             echo "$SERVER_PORT is sp"    
           fi
@@ -102,8 +102,8 @@ jobs:
           install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{secrets.SSH_KEY}}" > ~/.ssh/id_rsa
           ssh-keyscan -H ${{inputs.SERVER_ADDR}} > ~/.ssh/known_hosts
-          echo "is $SERVER_PORTT and is ${{SERVER_PORT}} and ${{ env.SERVER_PORTT }} inp ${{inputs.SERVER_PORT}} "
-          ssh -T -p ${{ inputs.SERVER_PORT }} ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} > /dev/null
+          echo "is $SERVER_PORTT and is ${{SERVER_PORT}} and ${{env.SERVER_PORTT}} inp ${{inputs.SERVER_PORT}} "
+          ssh -T -p ${{inputs.SERVER_PORT}} ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} > /dev/null
           echo "#!/bin/bash" > ~/update_script.sh
       - name: Update from SIMBIOZ repo - prepare
         if: ${{inputs.update_simbioz}}
@@ -154,7 +154,7 @@ jobs:
           echo "=== START PRINT SCRIPT ==="
           cat ~/update_script.sh
           echo "=== END PRINT SCRIPT ==="
-          ssh -o TCPKeepAlive=yes -o ServerAliveCountMax=30 -o ServerAliveInterval=60 -p ${{ inputs.SERVER_PORT }} ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} bash < ~/update_script.sh
+          ssh -o TCPKeepAlive=yes -o ServerAliveCountMax=30 -o ServerAliveInterval=60 -p ${{inputs.SERVER_PORT}} ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} bash < ~/update_script.sh
           python3 ci_cd_tools/scripts/odoo_update_addons.py "${{inputs.ODOO_USER}}" "${{secrets.ODOO_PASSWORD}}" "${{inputs.ODOO_URI}}" "${{inputs.ODOO_DB}}"
       - name: Hard update (base module)
         if: ${{inputs.base_update}}
@@ -168,4 +168,4 @@ jobs:
           sudo systemctl status ${{inputs.ODOO_SERVICE}}
           EOF
           cat ~/update_script.sh
-          ssh -o TCPKeepAlive=yes -o ServerAliveCountMax=100 -o ServerAliveInterval=60 -p ${{ inputs.SERVER_PORT }} ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} bash < ~/update_script.sh
+          ssh -o TCPKeepAlive=yes -o ServerAliveCountMax=100 -o ServerAliveInterval=60 -p ${{inputs.SERVER_PORT}} ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} bash < ~/update_script.sh
