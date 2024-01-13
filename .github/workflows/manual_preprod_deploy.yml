@@ -100,7 +100,7 @@ jobs:
           install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{secrets.SSH_KEY}}" > ~/.ssh/id_rsa
           ssh-keyscan -H ${{inputs.SERVER_ADDR}} > ~/.ssh/known_hosts
-          echo "is $SERVER_PORTT and is ${{SERVER_PORT}} and ${{env.SERVER_PORTT}} inp ${{inputs.SERVER_PORT}} "
+          echo "is $SERVER_PORTT and is ${{env.SERVER_PORTT}} inp ${{inputs.SERVER_PORT}} "
           ssh -T -p ${{inputs.SERVER_PORT}} ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} > /dev/null
           echo "#!/bin/bash" > ~/update_script.sh
       - name: Update from SIMBIOZ repo - prepare
