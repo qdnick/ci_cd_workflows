@@ -60,8 +60,7 @@ jobs:
           SERVER_PORT="${{ inputs.SERVER_PORT }}"
           [[ -z "${SERVER_PORT}" ]] && SERVER_PORT=22
             echo "${{ env.SERVER_PORT }} is env"
-            echo "${{inputs.SERVER_PORT}} is input"  
-          fi          
+            echo "${{inputs.SERVER_PORT}} is input"    
           if [[ -z "${{inputs.MAIN_PATH}}" ]]; then
             echo "MAIN_PATH is not set"
             exit 100
