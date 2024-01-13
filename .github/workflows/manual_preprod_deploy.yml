@@ -43,6 +43,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-20.04
+    env:
+      SERVER_PORT: 22
     steps:
       - name: Check variables
         run: |
