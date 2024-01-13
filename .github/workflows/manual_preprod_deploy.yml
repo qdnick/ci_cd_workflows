@@ -58,11 +58,11 @@ jobs:
             exit 100
           fi
           if [[ -z "${{inputs.SERVER_PORT}}" ]]; then
-            SERVER_PORT=22
+            ${{ env.SERVER_PORT }}=22
             echo "SERVER_PORT is 22"
             echo "$SERVER_PORT is 22"
           else
-            SERVER_PORT="${{inputs.SERVER_PORT}}"  
+          ${{ env.SERVER_PORT }}="${{inputs.SERVER_PORT}}"  
           fi          
           if [[ -z "${{inputs.MAIN_PATH}}" ]]; then
             echo "MAIN_PATH is not set"
@@ -103,7 +103,7 @@ jobs:
           echo "${{secrets.SSH_KEY}}" > ~/.ssh/id_rsa
           ssh-keyscan -H ${{inputs.SERVER_ADDR}} > ~/.ssh/known_hosts
           echo "is $SERVER_PORT and is ${SERVER_PORT} and ${{ env.SERVER_PORT }}"
-          ssh -T -p "${{ env.SERVER_PORT }}" ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} > /dev/null
+          ssh -T -p ${{ env.SERVER_PORT }} ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} > /dev/null
           echo "#!/bin/bash" > ~/update_script.sh
       - name: Update from SIMBIOZ repo - prepare
         if: ${{inputs.update_simbioz}}
