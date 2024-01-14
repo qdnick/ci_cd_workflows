@@ -95,12 +95,12 @@ jobs:
           ssh-keyscan -H ${{inputs.SERVER_ADDR}} > ~/.ssh/known_hosts
           env:
             SERVER_PORTT: 22  
-          if [[ ! -z "${{ inputs.SERVER_PORT }}" ]]; then
-            SERVER_PORTT="${{ inputs.SERVER_PORT }}"
+          if [[ ! -z "${{inputs.SERVER_PORT}}" ]]; then
+            SERVER_PORTT="${{inputs.SERVER_PORT}}"
             echo "SERVER_PORTT is $SERVER_PORTT"
           fi
           echo "is ${{SERVER_PORTT}} and is ${{env.SERVER_PORTT}} inp ${{inputs.SERVER_PORT}} "
-          ssh -T -p ${{SERVER_PORT}} ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} > /dev/null
+          ssh -T -p ${{SERVER_PORTT}} ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} > /dev/null
           echo "#!/bin/bash" > ~/update_script.sh
       - name: Update from SIMBIOZ repo - prepare
         if: ${{inputs.update_simbioz}}
