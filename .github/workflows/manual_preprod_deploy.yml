@@ -40,8 +40,6 @@ on:
         required: true
       ODOO_PASSWORD:
         required: true
-env:
-  SERVER_PORTT: 22
 jobs:
   deploy:
     runs-on: ubuntu-20.04
@@ -56,11 +54,6 @@ jobs:
           if [[ -z "${{inputs.SERVER_USER}}" ]]; then
             echo "SERVER_USER is not set"
             exit 100
-          fi
-          if [[ ! -z "${{inputs.SERVER_PORT}}" ]]; then
-            SERVER_PORTT="${{inputs.SERVER_PORT}}"
-            echo "SERVER_PORTT is $SERVER_PORTT"
-            echo "$SERVER_PORTT is sp"    
           fi
           if [[ -z "${{inputs.MAIN_PATH}}" ]]; then
             echo "MAIN_PATH is not set"
@@ -100,8 +93,14 @@ jobs:
           install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{secrets.SSH_KEY}}" > ~/.ssh/id_rsa
           ssh-keyscan -H ${{inputs.SERVER_ADDR}} > ~/.ssh/known_hosts
+          env:
+            SERVER_PORTT: 22  
+          if [[ ! -z "${{ inputs.SERVER_PORT }}" ]]; then
+            SERVER_PORTT="${{ inputs.SERVER_PORT }}"
+            echo "SERVER_PORTT is $SERVER_PORTT"
+          fi
           echo "is $SERVER_PORTT and is ${{env.SERVER_PORTT}} inp ${{inputs.SERVER_PORT}} "
-          ssh -T -p ${{inputs.SERVER_PORT}} ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} > /dev/null
+          ssh -T -p $SERVER_PORT ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} > /dev/null
           echo "#!/bin/bash" > ~/update_script.sh
       - name: Update from SIMBIOZ repo - prepare
         if: ${{inputs.update_simbioz}}
