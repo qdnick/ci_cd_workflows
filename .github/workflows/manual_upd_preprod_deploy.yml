@@ -98,7 +98,6 @@ jobs:
           install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{secrets.SSH_KEY}}" > ~/.ssh/id_rsa
           ssh-keyscan -H ${{inputs.SERVER_ADDR}} > ~/.ssh/known_hosts
-# ---     
           cat >~/.ssh/config <<EOF
           Host deploy
             HostName ${{inputs.SERVER_ADDR}}
@@ -108,11 +107,6 @@ jobs:
             StrictHostKeyChecking no
           EOF
           ssh -T deploy > /dev/null
-# ---          if [[ ! -z "${{inputs.SERVER_PORT}}" ]]; then
-# ---            ssh -T -p ${{inputs.SERVER_PORT}} ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} > /dev/null
-# ---          else
-# ---            ssh -T ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} > /dev/null  
-# ---          fi
           echo "#!/bin/bash" > ~/update_script.sh
       - name: Update from SIMBIOZ repo - prepare
         if: ${{inputs.update_simbioz}}
