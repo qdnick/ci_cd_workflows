@@ -146,19 +146,36 @@ jobs:
       - name: Soft update (only changes)
         if: ${{!inputs.base_update}}
         run: |
-          cat <<EOF >> ~/update_script.sh
-          echo "=== UPDATING ODOO ==="
-          sudo systemctl restart ${{inputs.ODOO_SERVICE}} && sleep 10
-          EOF
-          echo "=== START PRINT SCRIPT ==="
-          cat ~/update_script.sh
-          echo "=== END PRINT SCRIPT ==="
-          if [[ ! -z "${{inputs.SERVER_PORT}}" ]]; then
-            ssh -o TCPKeepAlive=yes -o ServerAliveCountMax=30 -o ServerAliveInterval=60 -p ${{inputs.SERVER_PORT}} ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} bash < ~/update_script.sh
+          echo "=== GET DATABASE LIST ==="
+          ssh deploy "sudo systemctl restart ${{inputs.ODOO_SERVICE}} && sleep 10"
+          if [[ $ODOO_DB == -* ]]; then
+# ---            DB_RESULT=$(ssh deploy "sudo -u $SERVER_USER bash -c 'source $MAIN_PATH/venv/bin/activate && click-odoo-listdb -c \"$ODOO_CONFIG\"'")
+            DB_RESULT=$(ssh deploy "sudo -u $SERVER_USER bash -c 'source $MAIN_PATH/venv/bin/activate && click-odoo-listdb -c \"$ODOO_CONFIG\"'")
           else
-            ssh -o TCPKeepAlive=yes -o ServerAliveCountMax=30 -o ServerAliveInterval=60 ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} bash < ~/update_script.sh
+            DB_RESULT=$ODOO_DB
           fi
-          python3 ci_cd_tools/scripts/odoo_update_addons.py "${{inputs.ODOO_USER}}" "${{secrets.ODOO_PASSWORD}}" "${{inputs.ODOO_URI}}" "${{inputs.ODOO_DB}}"
+          echo "=== DATABASES ==="
+          echo "$DB_RESULT"
+          for db in $DB_RESULT; do
+            echo "=== UPDATING DATABASE $db ==="
+            ssh -o TCPKeepAlive=yes -o ServerAliveCountMax=100 -o ServerAliveInterval=60 -p ${{inputs.SERVER_PORT}} ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} "sudo -u $SERVER_USER bash -c 'source $MAIN_PATH/venv/bin/activate && click-odoo-update -c \"$ODOO_CONFIG\" -d \"$db\" --watcher-max-seconds 0 --log-level info'"
+          done
+# ---
+# ---        run: |
+# ---          cat <<EOF >> ~/update_script.sh
+# ---          echo "=== UPDATING ODOO ==="
+# ---          sudo systemctl restart ${{inputs.ODOO_SERVICE}} && sleep 10
+# ---          EOF
+# ---          echo "=== START PRINT SCRIPT ==="
+# ---          cat ~/update_script.sh
+# ---          echo "=== END PRINT SCRIPT ==="
+# ---          if [[ ! -z "${{inputs.SERVER_PORT}}" ]]; then
+# ---            ssh -o TCPKeepAlive=yes -o ServerAliveCountMax=30 -o ServerAliveInterval=60 -p ${{inputs.SERVER_PORT}} ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} bash < ~/update_script.sh
+# ---          else
+# ---            ssh -o TCPKeepAlive=yes -o ServerAliveCountMax=30 -o ServerAliveInterval=60 ${{inputs.SERVER_USER}}@${{inputs.SERVER_ADDR}} bash < ~/update_script.sh
+# ---          fi
+# ---          python3 ci_cd_tools/scripts/odoo_update_addons.py "${{inputs.ODOO_USER}}" "${{secrets.ODOO_PASSWORD}}" "${{inputs.ODOO_URI}}" "${{inputs.ODOO_DB}}"
+# ---
       - name: Hard update (base module)
         if: ${{inputs.base_update}}
         run: |
