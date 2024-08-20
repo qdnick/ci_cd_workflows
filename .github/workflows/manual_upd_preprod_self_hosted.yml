@@ -1,4 +1,4 @@
-name: Manual UPD preprod deploy
+name: UPD preprod self-hosted
 on:
   workflow_call:
     inputs:
@@ -47,8 +47,7 @@ env:
   SERVER_USER: ${{inputs.SERVER_USER}}
 jobs:
   deploy:
-    # runs-on: ubuntu-20.04
-    runs-on: run1
+    runs-on: self-hosted
     steps:
       - name: Check variables
         run: |
